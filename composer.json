@@ -1,0 +1,54 @@
+{
+    "name": "box-project/builder",
+    "description": "A library for building and modifying PHP archives.",
+    "keywords": ["phar"],
+    "license": "MIT",
+    "homepage": "http://box-project.org",
+    "support": {
+        "issues": "https://github.com/box-project/builder/issues",
+        "source": "https://github.com/box-project/builder",
+        "wiki": "https://github.com/box-project/builder/wiki"
+    },
+
+    "authors": [
+        {
+            "name": "Kevin Herrera",
+            "email": "kevin@herrera.io",
+            "homepage": "http://kevin.herrera.io/",
+            "role": "Developer"
+        }
+    ],
+
+    "autoload": {
+        "psr-4": {
+            "Box\\Component\\Builder\\": ""
+        }
+    },
+
+    "config": {
+        "bin-dir": "bin"
+    },
+
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.x-dev"
+        }
+    },
+
+    "require": {
+        "php": ">=5.4",
+        "ext-phar": "*",
+        "kherge/file": "~1.3"
+    },
+
+    "require-dev": {
+        "box-project/processor": "~0.1",
+        "phpunit/phpunit": "~4.6",
+        "symfony/event-dispatcher": "2.5.*"
+    },
+
+    "suggest": {
+        "box-project/processor": "For processing file contents.",
+        "symfony/event-dispatcher": "Enables support for observing console events."
+    }
+}

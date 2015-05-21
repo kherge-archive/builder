@@ -13,8 +13,6 @@ use Box\Component\Builder\Event\PreAddFromStringEvent;
 use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
 use Box\Component\Builder\Events;
-use KHerGe\File\File;
-use PharFileInfo;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -478,25 +476,6 @@ class BuilderTest extends AbstractBuilderTestCase
         $this->dispatcher = null;
 
         parent::tearDown();
-    }
-
-    /**
-     * Returns the file contents of an archived file.
-     *
-     * @param PharFileInfo $file The archived file.
-     *
-     * @return string The contents of the file.
-     */
-    private function getFileContents(PharFileInfo $file)
-    {
-        $reader = File::create($file->getPathname());
-        $contents = '';
-
-        do {
-            $contents .= $reader->fgets();
-        } while (!$reader->eof());
-
-        return $contents;
     }
 
     /**

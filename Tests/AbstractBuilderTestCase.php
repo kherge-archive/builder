@@ -3,7 +3,9 @@
 namespace Box\Component\Builder\Tests;
 
 use Box\Component\Builder\Builder;
+use KHerGe\File\File;
 use KHerGe\File\Utility;
+use PharFileInfo;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
@@ -33,6 +35,25 @@ abstract class AbstractBuilderTestCase extends TestCase
      * @var string
      */
     protected $dir;
+
+    /**
+     * Returns the file contents of an archived file.
+     *
+     * @param PharFileInfo $file The archived file.
+     *
+     * @return string The contents of the file.
+     */
+    protected function getFileContents(PharFileInfo $file)
+    {
+        $reader = File::create($file->getPathname());
+        $contents = '';
+
+        do {
+            $contents .= $reader->fgets();
+        } while (!$reader->eof());
+
+        return $contents;
+    }
 
     /**
      * Creates a temporary builder and directory.

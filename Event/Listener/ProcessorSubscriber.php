@@ -78,7 +78,8 @@ class ProcessorSubscriber implements EventSubscriberInterface
         $event->setIterator(
             new ProcessorIterator(
                 $this->processor,
-                $event->getIterator()
+                $event->getIterator(),
+                $event->getBase()
             )
         );
     }

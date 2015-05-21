@@ -89,10 +89,21 @@ CONTENTS
      */
     public function testOnBuildFromIterator()
     {
+        file_put_contents(
+            $this->dir . '/a.php',
+            '<?php echo "Hello, world!\n";'
+        );
+
         $event = new PreBuildFromIteratorEvent(
             $this->builder,
-            new ArrayIterator(array()),
-            ''
+            new ArrayIterator(
+                array(
+                    $this->dir . '/a.php' => new \SplFileInfo(
+                        $this->dir . '/a.php'
+                    )
+                )
+            ),
+            $this->dir . '/'
         );
 
         $this->subscriber->onBuildFromIterator($event);
@@ -101,6 +112,10 @@ CONTENTS
             'Box\Component\Processor\ProcessorIterator',
             $event->getIterator()
         );
+
+        foreach ($event->getIterator() as $key => $value) {
+            self::assertEquals('a.php', $key);
+        }
     }
 
     /**

@@ -36,7 +36,7 @@ class PostAddFromStringEvent extends Event
      * @param string      $local    The path to the file in the archive.
      * @param null|string $contents The contents of the file.
      */
-    public function __construct(Builder $builder, $local, $contents)
+    public function __construct(Builder $builder, $local, $contents = null)
     {
         $this->builder = $builder;
         $this->contents = $contents;

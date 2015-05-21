@@ -36,7 +36,7 @@ class PostBuildFromDirectoryEvent extends Event
      * @param string      $path    The path to the directory.
      * @param null|string $filter  The regular expression filter.
      */
-    public function __construct(Builder $builder, $path, $filter)
+    public function __construct(Builder $builder, $path, $filter = null)
     {
         $this->builder = $builder;
         $this->filter = $filter;

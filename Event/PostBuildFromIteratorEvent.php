@@ -37,8 +37,11 @@ class PostBuildFromIteratorEvent extends Event
      * @param Iterator    $iterator The iterator.
      * @param null|string $base     The base directory path.
      */
-    public function __construct(Builder $builder, Iterator $iterator, $base)
-    {
+    public function __construct(
+        Builder $builder,
+        Iterator $iterator,
+        $base = null
+    ) {
         $this->base = $base;
         $this->builder = $builder;
         $this->iterator = $iterator;

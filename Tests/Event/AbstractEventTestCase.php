@@ -5,6 +5,7 @@ namespace Box\Component\Builder\Tests\Event;
 use Box\Component\Builder\Builder;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use PHPUnit_Framework_TestCase as TestCase;
+use ReflectionClass;
 
 /**
  * Manages shared characteristics of event classes.
@@ -25,10 +26,7 @@ class AbstractEventTestCase extends TestCase
      */
     protected function setUp()
     {
-        $this->builder = $this
-            ->getMockBuilder('Box\Component\Builder\Builder')
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $reflection = new ReflectionClass('Box\Component\Builder\Builder');
+        $this->builder = $reflection->newInstanceWithoutConstructor();
     }
 }

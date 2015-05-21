@@ -13,11 +13,14 @@ use Box\Component\Builder\Event\PreAddFromStringEvent;
 use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
 use Box\Component\Builder\Iterator\RegexIterator;
+use DirectoryIterator;
 use Iterator;
 use KHerGe\File\File;
 use Phar;
+use PharFileInfo;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
+use SplFileInfo;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -287,6 +290,58 @@ class Builder extends Phar
         EventDispatcherInterface $dispatcher = null
     ) {
         $this->dispatcher = $dispatcher;
+    }
+
+    /**
+     * Resolves the path to its `PharFileInfo` object.
+     *
+     * @param string $path The path to the file or directory.
+     *
+     * @return PharFileInfo The path object.
+     */
+    public function resolvePath($path)
+    {
+        $branches = preg_split('/[\\\\\/]+/', $path);
+
+        if (0 < count($branches)) {
+            $branch = array_shift($branches);
+
+            if (isset($this[$branch])) {
+                return $this->doResolvePath($branches, $this[$branch]);
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Traverses each branch in the tree until the leaf is found.
+     *
+     * @param array       $branches The branches to traverse.
+     * @param SplFileInfo $tree     The tree to traverse.
+     *
+     * @return null|PharFileInfo The leaf.
+     */
+    private function doResolvePath(array $branches, SplFileInfo $tree)
+    {
+        if (0 === count($branches)) {
+            return new PharFileInfo($tree->getPathname());
+        }
+
+        if (!$tree->isDir()) {
+            return null;
+        }
+
+        $branch = array_shift($branches);
+        $iterator = new DirectoryIterator($tree->getPathname());
+
+        foreach ($iterator as $current) {
+            if ($current->getFilename() === $branch) {
+                return $this->doResolvePath($branches, $current);
+            }
+        }
+
+        return null;
     }
 
     /**

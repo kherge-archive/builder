@@ -457,6 +457,38 @@ class BuilderTest extends AbstractBuilderTestCase
     }
 
     /**
+     * Verifies that we can resolve paths.
+     */
+    public function testResolvePath()
+    {
+        // create a test source directory
+        mkdir($this->dir . '/src/a/sub', 0755, true);
+
+        file_put_contents(
+            $this->dir . '/src/a/sub/test.php',
+            '<?php echo "Hello, world!\n";'
+        );
+
+        touch($this->dir . '/src/a/test.jpg');
+
+        // add the source to the builder
+        $this->builder->buildFromDirectory($this->dir . '/');
+
+        // verify that we can resolve paths
+        self::assertNull($this->builder->resolvePath('nope'));
+        self::assertNull($this->builder->resolvePath('src/nope'));
+        self::assertNull($this->builder->resolvePath('src/a/test.jpg/nope'));
+        self::assertInstanceOf(
+            'PharFileInfo',
+            $this->builder->resolvePath('src/a/test.jpg')
+        );
+        self::assertInstanceOf(
+            'PharFileInfo',
+            $this->builder->resolvePath('src/a/sub/test.php')
+        );
+    }
+
+    /**
      * Creates temporary paths and sets up the builder.
      */
     protected function setUp()

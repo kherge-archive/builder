@@ -269,7 +269,7 @@ class BuilderTest extends AbstractBuilderTestCase
                 touch($this->dir . '/src/b/test.gif');
 
                 $event->setFilter('/\.gif$/');
-                $event->setPath($this->dir . '/src/b');
+                $event->setPath($this->dir . '/src/b/');
             }
         );
 
@@ -359,7 +359,7 @@ class BuilderTest extends AbstractBuilderTestCase
 
                 touch($this->dir . '/src/b/test.gif');
 
-                $event->setBase($this->dir . '/src/b');
+                $event->setBase($this->dir . '/src/b/');
                 $event->setIterator(
                     new RecursiveIteratorIterator(
                         new RecursiveDirectoryIterator(
@@ -389,7 +389,7 @@ class BuilderTest extends AbstractBuilderTestCase
                         | RecursiveDirectoryIterator::SKIP_DOTS
                 )
             ),
-            $this->dir . '/src/a'
+            $this->dir . '/src/a/'
         );
 
         self::assertArrayNotHasKey('sub/test.php', $this->builder);
@@ -424,7 +424,7 @@ class BuilderTest extends AbstractBuilderTestCase
                         | RecursiveDirectoryIterator::SKIP_DOTS
                 )
             ),
-            $this->dir . '/src/a'
+            $this->dir . '/src/a/'
         );
 
         self::assertArrayNotHasKey('sub/test.php', $this->builder);
@@ -444,7 +444,7 @@ class BuilderTest extends AbstractBuilderTestCase
                         | RecursiveDirectoryIterator::SKIP_DOTS
                 )
             ),
-            $this->dir . '/src/a'
+            $this->dir . '/src/a/'
         );
 
         self::assertArrayHasKey('sub/test.php', $this->builder);

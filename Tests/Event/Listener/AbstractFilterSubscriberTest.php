@@ -12,6 +12,7 @@ use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
 use Box\Component\Builder\Events;
 use Box\Component\Builder\Tests\AbstractBuilderTestCase;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
+use SplFileInfo;
 
 /**
  * Verifies that the class functions as intended.
@@ -71,6 +72,7 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
             ->subscriber
             ->expects(self::exactly(2))
             ->method('isAllowed')
+            ->with(self::anything(), true)
             ->willReturnCallback(
                 function ($path) {
                     return ('/path/to/a' === $path);
@@ -103,6 +105,7 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
             ->subscriber
             ->expects(self::exactly(4))
             ->method('isAllowed')
+            ->with(self::anything(), false)
             ->willReturnCallback(
                 function ($path) {
                     return ('/path/to/a' === $path);
@@ -149,6 +152,7 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
             ->subscriber
             ->expects(self::exactly(2))
             ->method('isAllowed')
+            ->with(self::anything(), false)
             ->willReturnCallback(
                 function ($path) {
                     return ('to/a' === $path);
@@ -181,6 +185,7 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
             ->subscriber
             ->expects(self::exactly(2))
             ->method('isAllowed')
+            ->with(self::anything(), true)
             ->willReturnCallback(
                 function ($path) {
                     return ('/path/to/a' === $path);
@@ -221,6 +226,7 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
             ->subscriber
             ->expects(self::exactly(5))
             ->method('isAllowed')
+            ->with(self::anything(), true)
             ->willReturnCallback(
                 function ($path) {
                     return (false !== strpos($path, 'to/a'));
@@ -229,10 +235,13 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
         ;
 
         // make sure we only see allowed paths
+        mkdir($this->dir . '/to/a', 0755, true);
+        mkdir($this->dir . '/to/b', 0755, true);
+
         $iterator = new ArrayIterator(
             array(
-                'to/a' => '/path/to/a',
-                'to/b' => '/path/to/b'
+                'to/a' => $this->dir . '/to/a',
+                'to/b' => $this->dir . '/to/b'
             )
         );
 
@@ -250,8 +259,8 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
         // make sure we only see allowed local paths
         $iterator = new ArrayIterator(
             array(
-                'to/a' => 123, // pretend it's SplFileObject
-                'to/b' => 123
+                $this->dir . '/to/a' => 123, // pretend it's SplFileObject
+                'to/b' => new SplFileInfo($this->dir . '/to/b')
             )
         );
 
@@ -263,7 +272,7 @@ class AbstractFilterSubscriberTest extends AbstractBuilderTestCase
         $this->subscriber->onBuildFromIterator($event);
 
         foreach ($event->getIterator() as $key => $value) {
-            self::assertEquals('to/a', $key);
+            self::assertEquals($this->dir . '/to/a', $key);
         }
     }
 

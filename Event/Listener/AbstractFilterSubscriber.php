@@ -61,11 +61,12 @@ abstract class AbstractFilterSubscriber implements EventSubscriberInterface
      * or directory inside the archive. It is up to the implementing class
      * to determine how this difference should be handled.
      *
-     * @param string $path The path to the file.
+     * @param string  $path The path to the file.
+     * @param boolean $dir  Is it a directory?
      *
      * @return boolean Returns `true` if allowed, `false` if not.
      */
-    abstract public function isAllowed($path);
+    abstract public function isAllowed($path, $dir);
 
     /**
      * Filters empty directories that are about to be added.
@@ -74,7 +75,7 @@ abstract class AbstractFilterSubscriber implements EventSubscriberInterface
      */
     public function onAddEmptyDir(PreAddEmptyDirEvent $event)
     {
-        if (!$this->isAllowed($event->getPath())) {
+        if (!$this->isAllowed($event->getPath(), true)) {
             $event->skip();
         }
     }
@@ -86,9 +87,9 @@ abstract class AbstractFilterSubscriber implements EventSubscriberInterface
      */
     public function onAddFile(PreAddFileEvent $event)
     {
-        if (!$this->isAllowed($event->getFile())
+        if (!$this->isAllowed($event->getFile(), false)
             || ((null !== $event->getLocal())
-                && !$this->isAllowed($event->getLocal()))) {
+                && !$this->isAllowed($event->getLocal(), false))) {
             $event->skip();
         }
     }
@@ -100,7 +101,7 @@ abstract class AbstractFilterSubscriber implements EventSubscriberInterface
      */
     public function onAddFromString(PreAddFromStringEvent $event)
     {
-        if (!$this->isAllowed($event->getLocal())) {
+        if (!$this->isAllowed($event->getLocal(), false)) {
             $event->skip();
         }
     }
@@ -117,7 +118,7 @@ abstract class AbstractFilterSubscriber implements EventSubscriberInterface
      */
     public function onBuildFromDirectory(PreBuildFromDirectoryEvent $event)
     {
-        if (!$this->isAllowed($event->getPath())) {
+        if (!$this->isAllowed($event->getPath(), true)) {
             $event->skip();
         }
     }

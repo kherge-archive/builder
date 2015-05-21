@@ -3,6 +3,7 @@
 namespace Box\Component\Builder\Tests\Event;
 
 use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
+use Box\Component\Builder\Tests\AbstractBuilderTestCase;
 
 /**
  * Verifies that the class functions as intended.
@@ -12,15 +13,8 @@ use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
  * @covers \Box\Component\Builder\Event\PostBuildFromDirectoryEvent
  * @covers \Box\Component\Builder\Event\PreBuildFromDirectoryEvent
  */
-class BuildFromDirectoryEventTest extends AbstractEventTestCase
+class BuildFromDirectoryEventTest extends AbstractBuilderTestCase
 {
-    /**
-     * The directory path.
-     *
-     * @var string
-     */
-    private $dir = '/path/to/a';
-
     /**
      * The event.
      *

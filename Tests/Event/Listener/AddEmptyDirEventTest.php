@@ -3,14 +3,14 @@
 namespace Box\Component\Builder\Tests\Event\Listener;
 
 use Box\Component\Builder\Event\PreAddEmptyDirEvent;
-use Box\Component\Builder\Tests\Event\AbstractEventTestCase;
+use Box\Component\Builder\Tests\AbstractBuilderTestCase;
 
 /**
  * Verifies that the class functions as intended.
  *
  * @author Kevin Herrera <kevin@herrera.io>
  */
-class AddEmptyDirEventTest extends AbstractEventTestCase
+class AddEmptyDirEventTest extends AbstractBuilderTestCase
 {
     /**
      * Verifies that we can set and retrieve the path.

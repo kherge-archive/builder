@@ -4,6 +4,7 @@ namespace Box\Component\Builder\Tests\Event;
 
 use ArrayIterator;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
+use Box\Component\Builder\Tests\AbstractBuilderTestCase;
 
 /**
  * Verifies that the class functions as intended.
@@ -13,7 +14,7 @@ use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
  * @covers \Box\Component\Builder\Event\PostBuildFromIteratorEvent
  * @covers \Box\Component\Builder\Event\PreBuildFromIteratorEvent
  */
-class BuildFromIteratorEventTest extends AbstractEventTestCase
+class BuildFromIteratorEventTest extends AbstractBuilderTestCase
 {
     /**
      * The base directory path.

@@ -3,6 +3,7 @@
 namespace Box\Component\Builder\Tests\Event;
 
 use Box\Component\Builder\Event\PreAddFromStringEvent;
+use Box\Component\Builder\Tests\AbstractBuilderTestCase;
 
 /**
  * Verifies that the class functions as intended.
@@ -12,7 +13,7 @@ use Box\Component\Builder\Event\PreAddFromStringEvent;
  * @covers \Box\Component\Builder\Event\PostAddFromStringEvent
  * @covers \Box\Component\Builder\Event\PreAddFromStringEvent
  */
-class AddFromStringEventTest extends AbstractEventTestCase
+class AddFromStringEventTest extends AbstractBuilderTestCase
 {
     /**
      * The contents.

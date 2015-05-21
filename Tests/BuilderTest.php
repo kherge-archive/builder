@@ -2,7 +2,6 @@
 
 namespace Box\Component\Builder\Tests;
 
-use Box\Component\Builder\Builder;
 use Box\Component\Builder\Event\PostAddEmptyDirEvent;
 use Box\Component\Builder\Event\PostAddFileEvent;
 use Box\Component\Builder\Event\PostAddFromStringEvent;
@@ -15,9 +14,7 @@ use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
 use Box\Component\Builder\Events;
 use KHerGe\File\File;
-use KHerGe\File\Utility;
 use PharFileInfo;
-use PHPUnit_Framework_TestCase as TestCase;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use Symfony\Component\EventDispatcher\EventDispatcher;
@@ -29,35 +26,14 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
  *
  * @covers \Box\Component\Builder\Builder
  */
-class BuilderTest extends TestCase
+class BuilderTest extends AbstractBuilderTestCase
 {
-    /**
-     * The builder instance being tested.
-     *
-     * @var Builder
-     */
-    private $builder;
-
-    /**
-     * The temporary directory path.
-     *
-     * @var string
-     */
-    private $dir;
-
     /**
      * The event dispatcher.
      *
      * @var EventDispatcher
      */
     private $dispatcher;
-
-    /**
-     * The temporary archive file.
-     *
-     * @var string
-     */
-    private $file;
 
     /**
      * Verifies that the pre and post events for `addEmptyDir` are dispatched.
@@ -122,7 +98,7 @@ class BuilderTest extends TestCase
     {
         // create a file to add
         file_put_contents(
-            $this->dir . '/src/test.php',
+            $this->dir . '/test.php',
             '<?php echo "Hello, world!\n";'
         );
 
@@ -132,7 +108,7 @@ class BuilderTest extends TestCase
         $this->dispatcher->addListener(
             Events::PRE_ADD_FILE,
             function (PreAddFileEvent $event) {
-                $file = $this->dir . '/src/other.php';
+                $file = $this->dir . '/other.php';
 
                 file_put_contents(
                     $file,
@@ -151,7 +127,7 @@ class BuilderTest extends TestCase
             }
         );
 
-        $this->builder->addFile($this->dir . '/src/test.php', 'test.php');
+        $this->builder->addFile($this->dir . '/test.php', 'test.php');
 
         self::assertArrayNotHasKey('test.php', $this->builder);
         self::assertArrayHasKey('other.php', $this->builder);
@@ -174,7 +150,7 @@ class BuilderTest extends TestCase
             }
         );
 
-        $this->builder->addFile($this->dir . '/src/test.php', 'test.php');
+        $this->builder->addFile($this->dir . '/test.php', 'test.php');
 
         self::assertArrayNotHasKey('test.php', $this->builder);
 
@@ -183,7 +159,7 @@ class BuilderTest extends TestCase
 
         $post = null;
 
-        $this->builder->addFile($this->dir . '/src/test.php', 'test.php');
+        $this->builder->addFile($this->dir . '/test.php', 'test.php');
 
         self::assertArrayHasKey('test.php', $this->builder);
         self::assertNull($post);
@@ -487,17 +463,10 @@ class BuilderTest extends TestCase
      */
     protected function setUp()
     {
-        $this->dir = tempnam(sys_get_temp_dir(), 'box-');
-        $this->file = $this->dir . DIRECTORY_SEPARATOR . 'test.phar';
-
-        unlink($this->dir);
-        mkdir($this->dir);
-        mkdir($this->dir . '/src');
-
+        parent::setUp();
 
         $this->dispatcher = new EventDispatcher();
 
-        $this->builder = new Builder($this->file);
         $this->builder->setEventDispatcher($this->dispatcher);
     }
 
@@ -506,12 +475,9 @@ class BuilderTest extends TestCase
      */
     protected function tearDown()
     {
-        $this->builder = null;
         $this->dispatcher = null;
 
-        if (file_exists($this->dir)) {
-            Utility::remove($this->dir);
-        }
+        parent::tearDown();
     }
 
     /**

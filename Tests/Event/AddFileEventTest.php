@@ -3,6 +3,7 @@
 namespace Box\Component\Builder\Tests\Event;
 
 use Box\Component\Builder\Event\PreAddFileEvent;
+use Box\Component\Builder\Tests\AbstractBuilderTestCase;
 
 /**
  * Verifies that the class functions as intended.
@@ -12,7 +13,7 @@ use Box\Component\Builder\Event\PreAddFileEvent;
  * @covers \Box\Component\Builder\Event\PostAddFileEvent
  * @covers \Box\Component\Builder\Event\PreAddFileEvent
  */
-class AddFileEventTest extends AbstractEventTestCase
+class AddFileEventTest extends AbstractBuilderTestCase
 {
     /**
      * The event.

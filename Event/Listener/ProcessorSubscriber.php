@@ -39,8 +39,8 @@ class ProcessorSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return array(
-            Events::PRE_ADD_FROM_STRING => 'onAddFromString',
-            Events::PRE_BUILD_FROM_ITERATOR => 'onBuildFromIterator'
+            Events::PRE_ADD_FROM_STRING => array('onAddFromString', -1),
+            Events::PRE_BUILD_FROM_ITERATOR => array('onBuildFromIterator', -1)
         );
     }
 

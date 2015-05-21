@@ -9,6 +9,7 @@ use Box\Component\Builder\Event\PreAddFromStringEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
 use Box\Component\Builder\Events;
 use Box\Component\Processor\CallbackProcessor;
+use KHerGe\File\Utility;
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -29,6 +30,13 @@ class ProcessorSubscriberTest extends TestCase
      * @var Builder|MockObject
      */
     private $builder;
+
+    /**
+     * The builder output file.
+     *
+     * @var string
+     */
+    private $builderFile;
 
     /**
      * The test processor.
@@ -117,11 +125,13 @@ CONTENTS
      */
     protected function setUp()
     {
-        $this->builder = $this
-            ->getMockBuilder('Box\Component\Builder\Builder')
-            ->disableOriginalConstructor()
-            ->getMock()
-        ;
+        $this->builderFile = tempnam(sys_get_temp_dir(), 'box-');
+
+        unlink($this->builderFile);
+
+        $this->builderFile .= '.phar';
+
+        $this->builder = new Builder($this->builderFile);
 
         $this->processor = new CallbackProcessor(
             function ($file) {
@@ -133,5 +143,15 @@ CONTENTS
         );
 
         $this->subscriber = new ProcessorSubscriber($this->processor);
+    }
+
+    /**
+     * Destroys the builder file.
+     */
+    protected function tearDown()
+    {
+        if (file_exists($this->builderFile)) {
+            Utility::remove($this->builderFile);
+        }
     }
 }

@@ -45,12 +45,12 @@ class ProcessorSubscriberTest extends AbstractBuilderTestCase
         $events = $this->subscriber->getSubscribedEvents();
 
         self::assertEquals(
-            array('onAddFromString', -1),
+            array('onAddFromString', -100),
             $events[Events::PRE_ADD_FROM_STRING]
         );
 
         self::assertEquals(
-            array('onBuildFromIterator', -1),
+            array('onBuildFromIterator', -100),
             $events[Events::PRE_BUILD_FROM_ITERATOR]
         );
     }

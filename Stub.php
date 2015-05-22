@@ -293,23 +293,25 @@ class Stub
      */
     protected function renderCalls()
     {
-        $stub = array(
-            'if (class_exists(\'Phar\')) {'
+        $stub = array_merge(
+            $this->renderMapPhar(),
+            $this->renderInterceptFileFuncs(),
+            $this->renderMungServer(),
+            $this->renderLoadPhar(),
+            $this->renderMount(),
+            $this->renderWebPhar()
         );
 
-        $stub = array_merge($stub, $this->renderMapPhar());
-        $stub = array_merge($stub, $this->renderInterceptFileFuncs());
-        $stub = array_merge($stub, $this->renderMungServer());
-        $stub = array_merge($stub, $this->renderLoadPhar());
-        $stub = array_merge($stub, $this->renderMount());
-        $stub = array_merge($stub, $this->renderWebPhar());
-
-        $stub[] = '} else {';
-        $stub[] = '    throw new RuntimeException(\'The phar extension is not installed.\');';
-        $stub[] = "}\n";
-
-        if (4 === count($stub)) {
-            $stub = array();
+        if (0 < count($stub)) {
+            $stub = array_merge(
+                array('if (class_exists(\'Phar\')) {'),
+                $stub,
+                array(
+                    '} else {',
+                    '    throw new RuntimeException(\'The phar extension is not installed.\');',
+                    "}\n"
+                )
+            );
         }
 
         if (null !== $this->code) {

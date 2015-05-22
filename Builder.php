@@ -2,6 +2,7 @@
 
 namespace Box\Component\Builder;
 
+use BadMethodCallException;
 use Box\Component\Builder\Event\PostAddEmptyDirEvent;
 use Box\Component\Builder\Event\PostAddFileEvent;
 use Box\Component\Builder\Event\PostAddFromStringEvent;
@@ -12,6 +13,7 @@ use Box\Component\Builder\Event\PreAddFileEvent;
 use Box\Component\Builder\Event\PreAddFromStringEvent;
 use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
+use Box\Component\Builder\Exception\BuilderException;
 use Box\Component\Builder\Iterator\RegexIterator;
 use Iterator;
 use KHerGe\File\File;
@@ -277,6 +279,37 @@ class Builder extends Phar
         }
 
         return $map;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @throws BuilderException If the archive could not be compressed.
+     *
+     * @codeCoverageIgnore
+     */
+    public function compressFiles($algorithm)
+    {
+        try {
+            parent::compressFiles($algorithm);
+        } catch (BadMethodCallException $exception) {
+            if ('unable to create temporary file' !== $exception->getMessage()) {
+                throw $exception;
+            }
+
+            throw new BuilderException(
+                preg_replace(
+                    '/\n+/',
+                    ' ',
+                <<<MESSAGE
+There is a known bug in the phar extension with the compression of archives that
+contain a large number of files. It is recommended that you increase the allowed
+maximum number of open files and try again. On Linux, the command you need to
+use is `ulimit`.
+MESSAGE
+                )
+            );
+        }
     }
 
     /**

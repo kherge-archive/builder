@@ -302,10 +302,11 @@ class Builder extends Phar
                     '/\n+/',
                     ' ',
                 <<<MESSAGE
-There is a known bug in the phar extension with the compression of archives that
-contain a large number of files. It is recommended that you increase the allowed
-maximum number of open files and try again. On Linux, the command you need to
-use is `ulimit`.
+There is a known bug in the phar extension with regards to the compression
+of archives that contain a large number of files. It is recommended that you
+increase the maximum number of open files allowed and try again. (This archive
+contains {$this->count()} files.) On Linux, the command you need to use to
+increase the limit is `ulimit -n \$NUM`.
 MESSAGE
                 )
             );

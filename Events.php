@@ -45,6 +45,13 @@ final class Events
     const POST_BUILD_FROM_ITERATOR = 'box.builder.build_from_iterator.after';
 
     /**
+     * The event after the stub is set.
+     *
+     * @var string
+     */
+    const POST_SET_STUB = 'box.builder.set_stub.after';
+
+    /**
      * The event before an empty directory is added.
      *
      * @var string
@@ -78,4 +85,11 @@ final class Events
      * @var string
      */
     const PRE_BUILD_FROM_ITERATOR = 'box.builder.build_from_iterator.before';
+
+    /**
+     * The event before the stub is set.
+     *
+     * @var string
+     */
+    const PRE_SET_STUB = 'box.builder.set_stub.before';
 }

@@ -2,16 +2,19 @@
 
 namespace Box\Component\Builder\Tests;
 
+use Box\Component\Builder\Builder;
 use Box\Component\Builder\Event\PostAddEmptyDirEvent;
 use Box\Component\Builder\Event\PostAddFileEvent;
 use Box\Component\Builder\Event\PostAddFromStringEvent;
 use Box\Component\Builder\Event\PostBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PostBuildFromIteratorEvent;
+use Box\Component\Builder\Event\PostSetStubEvent;
 use Box\Component\Builder\Event\PreAddEmptyDirEvent;
 use Box\Component\Builder\Event\PreAddFileEvent;
 use Box\Component\Builder\Event\PreAddFromStringEvent;
 use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
+use Box\Component\Builder\Event\PreSetStubEvent;
 use Box\Component\Builder\Events;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
@@ -486,6 +489,68 @@ class BuilderTest extends AbstractBuilderTestCase
             'PharFileInfo',
             $this->builder->resolvePath('src/a/sub/test.php')
         );
+    }
+
+    /**
+     * Verifies that the pre and post events for `setStub` are dispatched.
+     */
+    public function testSetStub()
+    {
+        // make sure the events are fired and changes are applied
+        $hello = '<?php echo "Hello, world!\n"; __HALT_COMPILER(); ?>';
+        $goodbye = '<?php echo "Goodbye, world!\n"; __HALT_COMPILER(); ?>';
+        $post = null;
+
+        $this->dispatcher->addListener(
+            Events::PRE_SET_STUB,
+            function (PreSetStubEvent $event) use ($goodbye) {
+                $event->setStub($goodbye);
+            }
+        );
+
+        $this->dispatcher->addListener(
+            Events::POST_SET_STUB,
+            function (PostSetStubEvent $event) use (&$post) {
+                $post = $event;
+            }
+        );
+
+        $this->builder->setStub($hello);
+
+        self::assertEquals($goodbye, trim($this->builder->getStub()));
+        self::assertInstanceOf(
+            'Box\Component\Builder\Event\PostSetStubEvent',
+            $post
+        );
+
+        // make sure the process can be skipped
+        $this->removeListeners();
+
+        $this->builder->setStub(Builder::createDefaultStub());
+
+        $this->dispatcher->addListener(
+            Events::PRE_SET_STUB,
+            function (PreSetStubEvent $event) {
+                $event->skip();
+            }
+        );
+
+        $this->builder->setStub($hello);
+
+        self::assertEquals(
+            trim(Builder::createDefaultStub()),
+            trim($this->builder->getStub())
+        );
+
+        // make sure we can skip everything and go straight to `Phar`
+        $this->builder->setEventDispatcher(null);
+
+        $post = null;
+
+        $this->builder->setStub($hello);
+
+        self::assertEquals($hello, trim($this->builder->getStub()));
+        self::assertNull($post);
     }
 
     /**

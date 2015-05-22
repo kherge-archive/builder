@@ -8,11 +8,13 @@ use Box\Component\Builder\Event\PostAddFileEvent;
 use Box\Component\Builder\Event\PostAddFromStringEvent;
 use Box\Component\Builder\Event\PostBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PostBuildFromIteratorEvent;
+use Box\Component\Builder\Event\PostSetStubEvent;
 use Box\Component\Builder\Event\PreAddEmptyDirEvent;
 use Box\Component\Builder\Event\PreAddFileEvent;
 use Box\Component\Builder\Event\PreAddFromStringEvent;
 use Box\Component\Builder\Event\PreBuildFromDirectoryEvent;
 use Box\Component\Builder\Event\PreBuildFromIteratorEvent;
+use Box\Component\Builder\Event\PreSetStubEvent;
 use Box\Component\Builder\Exception\BuilderException;
 use Box\Component\Builder\Iterator\RegexIterator;
 use Iterator;
@@ -344,6 +346,43 @@ MESSAGE
         }
 
         return null;
+    }
+
+    /**
+     * Sets the stub in the archive.
+     *
+     * @param string $stub The stub.
+     *
+     * @return boolean Returns `true` if successful, `false` if not.
+     */
+    public function setStub($stub, $_ = -1)
+    {
+        if (null === $this->dispatcher) {
+            return parent::setStub($stub);
+        }
+
+        $event = new PreSetStubEvent($this, $stub);
+
+        $this->dispatcher->dispatch(
+            Events::PRE_SET_STUB,
+            $event
+        );
+
+        $result = false;
+
+        if (!$event->isSkipped()) {
+            $result = parent::setStub($event->getStub());
+
+            $this->dispatcher->dispatch(
+                Events::POST_SET_STUB,
+                new PostSetStubEvent(
+                    $this,
+                    $event->getStub()
+                )
+            );
+        }
+
+        return $result;
     }
 
     /**

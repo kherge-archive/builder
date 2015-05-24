@@ -91,7 +91,7 @@ if (class_exists('Phar')) {
 }
 
 if (!class_exists('Phar')) {
-    define('BOX_BASE', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));
+    define('BOX_BASE', Extract::from(__FILE__, null, null, Extract::getOpenPattern()));
     chdir(BOX_BASE);
 } else {
     define('BOX_BASE', __FILE__);

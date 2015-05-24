@@ -74,7 +74,7 @@ class ExtractTest extends TestCase
     {
         $file = $this->buildArchive();
 
-        $this->paths[] = $dir = Extract::to($file);
+        $this->paths[] = $dir = Extract::from($file);
 
         self::assertFileExists("$dir/a");
         self::assertFileExists("$dir/b/b");
@@ -88,7 +88,7 @@ class ExtractTest extends TestCase
         // make sure the cache is preserved
         file_put_contents("$dir/b/b", 'x');
 
-        Extract::to($file, $dir);
+        Extract::from($file, $dir);
 
         self::assertEquals('x', file_get_contents("$dir/b/b"));
 
@@ -97,7 +97,7 @@ class ExtractTest extends TestCase
         $builder->addFromString('e/e/e/e/e', 'e');
         $builder = null;
 
-        Extract::to($file, $dir);
+        Extract::from($file, $dir);
 
         self::assertEquals('e', file_get_contents("$dir/e/e/e/e/e"));
     }
@@ -117,7 +117,7 @@ class ExtractTest extends TestCase
             }
         );
 
-        Extract::to($file, $dir);
+        Extract::from($file, $dir);
 
         self::assertFileExists("$dir/a");
         self::assertFileExists("$dir/b/b");
@@ -144,7 +144,7 @@ class ExtractTest extends TestCase
             }
         );
 
-        Extract::to($file, $dir);
+        Extract::from($file, $dir);
 
         self::assertFileExists("$dir/a");
         self::assertFileExists("$dir/b/b");

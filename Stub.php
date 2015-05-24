@@ -370,7 +370,7 @@ class Stub
 
         if ($this->extract) {
             $stub[] = '';
-            $constant = 'define(\'BOX_BASE\', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));';
+            $constant = 'define(\'BOX_BASE\', Extract::from(__FILE__, null, null, Extract::getOpenPattern()));';
             $chdir = 'chdir(BOX_BASE);';
 
             if ($this->forceExtract) {

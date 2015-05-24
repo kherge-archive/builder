@@ -162,7 +162,7 @@ class Extract
      *
      * @return string The path to the extracted archive directory.
      */
-    public static function to(
+    public static function from(
         $file,
         $dir = null,
         $offset = null,

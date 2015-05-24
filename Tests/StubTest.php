@@ -2,6 +2,7 @@
 
 namespace Box\Component\Builder\Tests;
 
+use Box\Component\Builder\Builder;
 use Box\Component\Builder\Extract;
 use Box\Component\Builder\Stub;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -21,6 +22,8 @@ class StubTest extends TestCase
     public function testToString()
     {
         $embed = Extract::getEmbedCode();
+        $phps = Builder::PHPS;
+        $php = Builder::PHP;
 
         self::assertEquals(
             <<<STUB
@@ -44,7 +47,7 @@ if (class_exists('Phar')) {
     Phar::mount('/path/to/c.phar', 'external/c');
     Phar::mount('/path/to/d.phar', 'external/d');
     Phar::webPhar('web.phar', 'f.php', 'g.php', array (
-  'phps' => 1,
+  'phps' => $phps,
   'c' => 'text/plain',
   'cc' => 'text/plain',
   'cpp' => 'text/plain',
@@ -55,8 +58,8 @@ if (class_exists('Phar')) {
   'rng' => 'text/plain',
   'txt' => 'text/plain',
   'xsd' => 'text/plain',
-  'php' => 0,
-  'inc' => 0,
+  'php' => $php,
+  'inc' => $php,
   'avi' => 'video/avi',
   'bmp' => 'image/bmp',
   'css' => 'text/css',

@@ -88,7 +88,10 @@ if (class_exists('Phar')) {
 }
 
 if (!class_exists('Phar')) {
-    chdir(Extract::to(__FILE__, null, null, Extract::getOpenPattern()));
+    define('BOX_BASE', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));
+    chdir(BOX_BASE);
+} else {
+    define('BOX_BASE', __FILE__);
 }
 
 require 'phar://map.phar/e.php';
@@ -137,6 +140,8 @@ BANNER
         self::assertEquals(
             <<<STUB
 <?php
+
+define('BOX_BASE', 'phar://' . __FILE__);
 
 require __FILE__ . "/test.php"
 

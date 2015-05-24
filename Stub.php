@@ -164,23 +164,28 @@ class Stub
 
             // @codeCoverageIgnoreStart
             if ($this->forceExtract) {
-                $stub[] = 'chdir(Extract::to(__FILE__, null, null, Extract::getOpenPattern()));';
+                $stub[] = 'define(\'BOX_BASE\', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));';
+                $stub[] = 'chdir(BOX_BASE);';
             } else {
                 $stub = array_merge(
                     $stub,
                     array(
                         'if (!class_exists(\'Phar\')) {',
-                        '    chdir(Extract::to(__FILE__, null, null, Extract::getOpenPattern()));',
+                        '    define(\'BOX_BASE\', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));',
+                        '    chdir(BOX_BASE);',
+                        '} else {',
+                        '    define(\'BOX_BASE\', __FILE__);',
                         '}'
                     )
                 );
             }
             // @codeCoverageIgnoreEnd
-
-            $stub[] = '';
+        } else {
+            $stub[] = 'define(\'BOX_BASE\', \'phar://\' . __FILE__);';
         }
 
         if (null !== $this->code) {
+            $stub[] = '';
             $stub[] = $this->code;
         }
 

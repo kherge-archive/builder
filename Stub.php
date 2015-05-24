@@ -72,6 +72,20 @@ class Stub
     );
 
     /**
+     * The flag used to indicate that the archive should be self-extracting.
+     *
+     * @var boolean
+     */
+    private $extract = false;
+
+    /**
+     * The flag for forcing self extraction even if `phar` is available.
+     *
+     * @var boolean
+     */
+    private $forceExtract = false;
+
+    /**
      * The flag for intercepting file functions.
      *
      * @var boolean
@@ -139,8 +153,38 @@ class Stub
             $stub[] = $this->banner . "\n";
         }
 
+        if ($this->extract) {
+            $stub[] = Extract::getEmbedCode();
+        }
+
         $stub = array_merge($stub, $this->renderCalls());
-        $stub[] = '__HALT_COMPILER(); ?>';
+
+        if ($this->extract) {
+            $stub[] = '';
+
+            // @codeCoverageIgnoreStart
+            if ($this->forceExtract) {
+                $stub[] = 'chdir(Extract::to(__FILE__, null, null, Extract::getOpenPattern()));';
+            } else {
+                $stub = array_merge(
+                    $stub,
+                    array(
+                        'if (!class_exists(\'Phar\')) {',
+                        '    chdir(Extract::to(__FILE__, null, null, Extract::getOpenPattern()));',
+                        '}'
+                    )
+                );
+            }
+            // @codeCoverageIgnoreEnd
+
+            $stub[] = '';
+        }
+
+        if (null !== $this->code) {
+            $stub[] = $this->code;
+        }
+
+        $stub[] = "\n__HALT_COMPILER(); ?>";
 
         return implode("\n", $stub);
     }
@@ -213,6 +257,22 @@ class Stub
     public function mungServer(array $server)
     {
         $this->mung = $server;
+
+        return $this;
+    }
+
+    /**
+     * Makes the archive self-extracting.
+     *
+     * @param boolean $enable Enable self extracting?
+     * @param boolean $force  Force self extraction?
+     *
+     * @return Stub For method chaining.
+     */
+    public function selfExtract($enable = true, $force = false)
+    {
+        $this->extract = $enable;
+        $this->forceExtract = $force;
 
         return $this;
     }
@@ -306,16 +366,8 @@ class Stub
             $stub = array_merge(
                 array('if (class_exists(\'Phar\')) {'),
                 $stub,
-                array(
-                    '} else {',
-                    '    throw new RuntimeException(\'The phar extension is not installed.\');',
-                    "}\n"
-                )
+                array('}')
             );
-        }
-
-        if (null !== $this->code) {
-            $stub[] = $this->code . "\n";
         }
 
         return $stub;

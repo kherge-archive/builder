@@ -2,6 +2,7 @@
 
 namespace Box\Component\Builder\Tests;
 
+use Box\Component\Builder\Extract;
 use Box\Component\Builder\Stub;
 use PHPUnit_Framework_TestCase as TestCase;
 
@@ -19,6 +20,8 @@ class StubTest extends TestCase
      */
     public function testToString()
     {
+        $embed = Extract::getEmbedCode();
+
         self::assertEquals(
             <<<STUB
 #!/usr/bin/php
@@ -28,6 +31,7 @@ class StubTest extends TestCase
  * This is the modified banner comment.
  */
 
+$embed
 if (class_exists('Phar')) {
     Phar::mapPhar('map.phar');
     Phar::interceptFileFuncs();
@@ -81,8 +85,10 @@ if (class_exists('Phar')) {
   'xbm' => 'image/xbm',
   'xml' => 'text/xml',
 ), 'rewrite_uri');
-} else {
-    throw new RuntimeException('The phar extension is not installed.');
+}
+
+if (!class_exists('Phar')) {
+    chdir(Extract::to(__FILE__, null, null, Extract::getOpenPattern()));
 }
 
 require 'phar://map.phar/e.php';
@@ -103,6 +109,7 @@ STUB
                         'REQUEST_URI'
                     )
                 )
+                ->selfExtract()
                 ->setBanner(
                     <<<BANNER
 /**

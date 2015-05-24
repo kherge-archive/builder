@@ -47,17 +47,17 @@ class Builder extends Phar
     /**
      * Adds an empty directory to the archive.
      *
-     * @param string $path The path to the directory.
+     * @param string $local The path to the directory in the archive.
      */
-    public function addEmptyDir($path = null)
+    public function addEmptyDir($local = null)
     {
         if (null === $this->dispatcher) {
-            parent::addEmptyDir($path);
+            parent::addEmptyDir($local);
 
             return;
         }
 
-        $event = new PreAddEmptyDirEvent($this, $path);
+        $event = new PreAddEmptyDirEvent($this, $local);
 
         $this->dispatcher->dispatch(
             Events::PRE_ADD_EMPTY_DIR,
@@ -65,9 +65,9 @@ class Builder extends Phar
         );
 
         if (!$event->isSkipped()) {
-            parent::addEmptyDir($event->getPath());
+            parent::addEmptyDir($event->getLocal());
 
-            $event = new PostAddEmptyDirEvent($this, $event->getPath());
+            $event = new PostAddEmptyDirEvent($this, $event->getLocal());
 
             $this->dispatcher->dispatch(
                 Events::POST_ADD_EMPTY_DIR,
@@ -329,20 +329,20 @@ MESSAGE
     /**
      * Resolves the path to its `PharFileInfo` object.
      *
-     * @param string $path The path to the file or directory.
+     * @param string $local The path to the file or directory in the archive.
      *
      * @return PharFileInfo The path object.
      */
-    public function resolvePath($path)
+    public function resolvePath($local)
     {
-        $path = sprintf(
+        $local = sprintf(
             'phar://%s/%s',
             $this->getAlias(),
-            ltrim($path, '\\/')
+            ltrim($local, '\\/')
         );
 
-        if (file_exists($path)) {
-            return new PharFileInfo($path);
+        if (file_exists($local)) {
+            return new PharFileInfo($local);
         }
 
         return null;

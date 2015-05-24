@@ -47,7 +47,7 @@ class BuilderTest extends AbstractBuilderTestCase
         $this->dispatcher->addListener(
             Events::PRE_ADD_EMPTY_DIR,
             function (PreAddEmptyDirEvent $event) {
-                $event->setPath('b');
+                $event->setLocal('b');
             }
         );
 

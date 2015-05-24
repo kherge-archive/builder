@@ -75,7 +75,7 @@ abstract class AbstractFilterSubscriber implements EventSubscriberInterface
      */
     public function onAddEmptyDir(PreAddEmptyDirEvent $event)
     {
-        if (!$this->isAllowed($event->getPath(), true)) {
+        if (!$this->isAllowed($event->getLocal(), true)) {
             $event->skip();
         }
     }

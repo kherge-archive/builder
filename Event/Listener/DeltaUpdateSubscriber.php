@@ -71,8 +71,8 @@ class DeltaUpdateSubscriber implements EventSubscriberInterface
      */
     public function onAddEmptyDir(PreAddEmptyDirEvent $event)
     {
-        if ($event->getBuilder()->offsetExists($event->getPath())
-            && $event->getBuilder()->resolvePath($event->getPath())->isDir()) {
+        if ($event->getBuilder()->offsetExists($event->getLocal())
+            && $event->getBuilder()->resolvePath($event->getLocal())->isDir()) {
             $event->skip();
         }
     }

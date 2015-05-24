@@ -16,14 +16,14 @@ class PostAddEmptyDirEvent extends Event
     use BuilderTrait;
 
     /**
-     * The path to the directory.
+     * The path to the directory in the archive.
      *
      * @var string
      */
-    protected $path;
+    protected $local;
 
     /**
-     * Sets the path to the directory.
+     * Sets the path to the directory in the archive.
      *
      * @param Builder $builder The builder.
      * @param string  $path    The path to the directory.
@@ -31,16 +31,16 @@ class PostAddEmptyDirEvent extends Event
     public function __construct(Builder $builder, $path)
     {
         $this->builder = $builder;
-        $this->path = $path;
+        $this->local = $path;
     }
 
     /**
-     * Returns the path to the directory.
+     * Returns the path to the directory in the archive.
      *
-     * @return string The path to the directory.
+     * @return string The path to the directory in the archive.
      */
-    public function getPath()
+    public function getLocal()
     {
-        return $this->path;
+        return $this->local;
     }
 }

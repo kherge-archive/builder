@@ -14,15 +14,15 @@ class PreAddEmptyDirEvent extends PostAddEmptyDirEvent
     use SkippableTrait;
 
     /**
-     * Sets the path to the directory.
+     * Sets the path to the directory in the archive.
      *
-     * @param string $path The path to the directory.
+     * @param string $local The path to the directory in the archive.
      *
      * @return PreAddEmptyDirEvent For method chaining.
      */
-    public function setPath($path)
+    public function setLocal($local)
     {
-        $this->path = $path;
+        $this->local = $local;
 
         return $this;
     }

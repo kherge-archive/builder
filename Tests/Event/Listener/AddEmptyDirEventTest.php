@@ -25,8 +25,8 @@ class AddEmptyDirEventTest extends AbstractBuilderTestCase
             '/path/to/a'
         );
 
-        self::assertEquals('/path/to/a', $event->getPath());
-        self::assertSame($event, $event->setPath('/path/to/b'));
-        self::assertEquals('/path/to/b', $event->getPath());
+        self::assertEquals('/path/to/a', $event->getLocal());
+        self::assertSame($event, $event->setLocal('/path/to/b'));
+        self::assertEquals('/path/to/b', $event->getLocal());
     }
 }

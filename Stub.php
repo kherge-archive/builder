@@ -157,32 +157,11 @@ class Stub
             $stub[] = Extract::getEmbedCode();
         }
 
-        $stub = array_merge($stub, $this->renderCalls());
-
-        if ($this->extract) {
-            $stub[] = '';
-
-            // @codeCoverageIgnoreStart
-            if ($this->forceExtract) {
-                $stub[] = 'define(\'BOX_BASE\', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));';
-                $stub[] = 'chdir(BOX_BASE);';
-            } else {
-                $stub = array_merge(
-                    $stub,
-                    array(
-                        'if (!class_exists(\'Phar\')) {',
-                        '    define(\'BOX_BASE\', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));',
-                        '    chdir(BOX_BASE);',
-                        '} else {',
-                        '    define(\'BOX_BASE\', __FILE__);',
-                        '}'
-                    )
-                );
-            }
-            // @codeCoverageIgnoreEnd
-        } else {
-            $stub[] = 'define(\'BOX_BASE\', \'phar://\' . __FILE__);';
-        }
+        $stub = array_merge(
+            $stub,
+            $this->renderCalls(),
+            $this->renderExtract()
+        );
 
         if (null !== $this->code) {
             $stub[] = '';
@@ -373,6 +352,40 @@ class Stub
                 $stub,
                 array('}')
             );
+        }
+
+        return $stub;
+    }
+
+    /**
+     * Renders the self-extraction code and base directory path constant.
+     *
+     * @return array The rendered self-extraction code.
+     *
+     * @codeCoverageIgnore
+     */
+    private function renderExtract()
+    {
+        $stub = array();
+
+        if ($this->extract) {
+            $stub[] = '';
+            $constant = 'define(\'BOX_BASE\', Extract::to(__FILE__, null, null, Extract::getOpenPattern()));';
+            $chdir = 'chdir(BOX_BASE);';
+
+            if ($this->forceExtract) {
+                $stub[] = $constant;
+                $stub[] = $chdir;
+            } else {
+                $stub[] = 'if (!class_exists(\'Phar\')) {';
+                $stub[] = "    $constant";
+                $stub[] = "    $chdir";
+                $stub[] = '} else {';
+                $stub[] = '    define(\'BOX_BASE\', __FILE__);';
+                $stub[] = '}';
+            }
+        } else {
+            $stub[] = 'define(\'BOX_BASE\', \'phar://\' . __FILE__);';
         }
 
         return $stub;

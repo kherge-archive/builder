@@ -104,7 +104,9 @@ The following diagram models the workflow for archive building methods that
 are affected by the event dispatcher. The specific methods that are affected
 are documented below.
 
-![Event Dispatching][Event Dispatching]
+<center>
+  <img alt="Event Dispatching" src="https://raw.githubusercontent.com/box-project/builder/master/Resources/images/dispatching.png"/>
+</center>
 
 > A complete list of events can be found in the `Events` class.
 
@@ -377,5 +379,4 @@ This software is released under the MIT license.
 [EventDispatcher component]: http://symfony.com/doc/current/components/event_dispatcher/index.html
 [`Phar` class]: http://php.net/manual/en/class.phar.php
 [`phar` extension]: http://php.net/manual/en/book.phar.php
-[Event Dispatching]: https://github.com/box-project/builder/blob/master/Resources/images/dispatching.png
 [`Processor` component]: https://github.com/box-project/processor

@@ -366,6 +366,96 @@ Sets the "shebang" line. If `null`, the line will be removed.
 
 Calls `Phar::webPhar()`.
 
+Included Event Listeners
+------------------------
+
+**Builder** component bundles some event listeners to simplify certain common
+tasks. You may use these listeners as they are, or extend them to customize
+their functionality to better suit your needs.
+
+### DeltaUpdateSubscriber
+
+```php
+use Box\Component\Builder\Event\Listener\DeltaUpdateSubscriber;
+
+$dispatcher->addSubscriber(new DeltaUpdateSubscriber());
+```
+
+The `DeltaUpdateSubscriber` intercepts files and directories that are added to
+the archive. It performs a check to see if the file or directory already exists
+in the archive and if it is newer than the one already in the archive. If the
+subscriber detects that the file or directory is as old or older than the one
+in the archive, the `skip()` event method is called.
+
+### ProcessorSubscriber
+
+```php
+use Box\Component\Builder\Event\Listener\ProcessorSubscriber;
+use Box\Component\Processor\Processor\PHP\CompactProcessor;
+
+$dispatcher->addSubscriber(
+    new ProcessorSubscriber(
+        new CompactProcessor()
+    )
+);
+```
+
+The `ProcessorSubscriber` intercepts files that are added to the archive. If
+a supported file is intercepted, the contents will be modified before they are
+added to the archive.
+
+### RegexBlacklistSubscriber
+
+```php
+use Box\Component\Builder\Event\Listener\RegexBlacklistSubscriber;
+
+$dispatcher->addSubscriber(
+    new RegexBlacklistSubscriber(
+    
+        // directory blacklist
+        array(
+            '/\/[Tt]ests\//'
+        ),
+        
+        // file blacklist
+        array(
+            '/\.exe$/'
+        )
+    )
+);
+```
+
+The `RegexBlacklistSubscriber` intercepts files and directories before they
+are added to the archive. If the file or directory path matches the regular
+expression blacklist, the `skip()` event method is called preventing the file
+or directory from being added to the archive.
+
+### RegexWhitelistSubscriber
+
+```php
+use Box\Component\Builder\Event\Listener\RegexWhitelistSubscriber;
+
+$dispatcher->addSubscriber(
+    new RegexWhitelistSubscriber(
+    
+        // directory blacklist
+        array(
+            '/\/src\//'
+        ),
+        
+        // file blacklist
+        array(
+            '/\.php/'
+        )
+    )
+);
+```
+
+The `RegexWhitelistSubscriber` intercepts files and directories before they
+are added to the archive. If the file or directory path does not match the
+regular expression whitelist, the `skip()` event method is called preventing
+the file or directory from being added to the archive.
+
 License
 -------
 

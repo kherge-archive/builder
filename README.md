@@ -8,15 +8,29 @@ Builder
 
     composer require box-project/builder
 
-Builder builds on the [`Phar` class][] provided by the [`phar` extension][] to
-create customizable workflows for building PHP archives (`*.phar`). Builder also
-provides features such as integration with the [`Processor` component][] as well
-as delta updates to existing archives.
+Builder leverages the [`phar` extension][] to provide a customizable workflow
+for creating new and managing existing PHP archives (`.phar`). The library
+provides an extension to the existing [`Phar` class][] and integrates an event
+dispatcher that allows for more advanced features such as file content
+processing and incremental updates of existing archives.
 
 ```php
 use Box\Component\Builder\Builder;
+use Box\Component\Builder\Event\Listener\ProcessorSubscriber;
+use Box\Component\Processor\Processor\PHP\CompactProcessor;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
+// compact php scripts as they are added
+$dispatcher = new EventDispatcher();
+$dispatcher->addSubscriber(
+    new ProcessorSubscriber(
+        new CompactProcessor()
+    )
+);
+
+// create a new archive using a directory
 $builder = new Builder('example.phar');
+$builder->setEventDispatcher($dispatcher);
 $builder->buildFromDirectory('/path/to/source');
 ```
 
@@ -34,32 +48,32 @@ Requirements
 Getting Started
 ---------------
 
-Before we begin, it is recommended that you become very familiar with Symfony's
-[EventDispatcher component][]. The heart of the **Builder** component relies on
-its availability to perform all of the customized functionality that is built on
-the `Phar` class. The main points of interest in the documentation are on how to
-create and register event listeners and subscribers.
+Before we get started, you need to be familiar with creating and registering
+event listeners and subscribers using Symfony's [EventDispatcher component][].
+The EventDispatcher component is responsible for providing the customizable
+workflows found in **Builder**.
 
 ```php
 use Box\Component\Builder\Builder;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 ```
 
-To start, you will first need to create an instance of `Builder`. The `Builder`
-class is an extension of the existing `Phar` class but with methods overloaded
-so that various processes can be customized.
+To create a new archive (or modify an existing one), you will first need to
+create an instance of `Builder`. The `Builder` class is an extension of the
+existing `Phar` class with some of the methods overloaded so that custom
+workflows can be integrated.
 
 ```php
 $builder = new Builder('example.phar');
 ```
 
 > You will be able to use the existing `Phar` class documentation on the PHP
-> website when using the `Builder` class. Only the class methods that have been
-> modified will be documented here.
+> website when using the `Builder` class. Only the class methods that have
+> been modified will be documented here.
 
-On its own, the `Builder` instance behaves identically to that of those from
-the `Phar` class. To leverage the strength of the changes made in `Builder`,
-you will need to register an instance of `EventDispatcherInterface` with the
+On its own, the `Builder` instance behaves identically to that of an instance
+of the `Phar` class. To leverage the strength of the changes made in `Builder`,
+you will need to register an instance of `EventDispatcherInterface` with your
 `Builder` instance.
 
 ```php
@@ -70,7 +84,7 @@ $dispatcher = new EventDispatcher();
 $builder->setEventDispatcher($dispatcher);
 ```
 
-The event dispatcher will be used when one of the following methods are called:
+The event dispatcher will be used when one of the following methods is called:
 
 - `addEmptyDir()`
 - `addFile()`
@@ -86,21 +100,29 @@ Builder Methods
 use Box\Component\Builder\Events;
 ```
 
-All events that can be observed are listed in the `Events` class. There is a
-pattern with all of the events that are dispatched for each of the methods that
-are listed below. Each `Events::PRE_*` event that is dispatched will allow an
-observer to abort the operation.
+The following diagram models the workflow for archive building methods that
+are affected by the event dispatcher. The specific methods that are affected
+are documented below.
 
-If `addFile()` is called, for example, a registered listener can abort the
-addition of the file by calling the `->skip()` method on the event object
-that is passed to each listener. This will prevent all remaining listeners
-from being dispatched, and it will cause the `addFile()` method to abort the
-addition of the file.
+![Event Dispatching][Event Dispatching]
 
-Each `Events::PRE_*` listener will receive an instance of the events respective
-`Box\Component\Builder\Event\Pre*Event` class. Each instance allows a listener
-to alter the arguments that are ultimately passed to the `Phar::*()` method that
-is being overloaded.
+> A complete list of events can be found in the `Events` class.
+
+Each affected method has two events.
+
+- A `Events::PRE_*` event that is dispatched before the method does its work.
+- A `Events::POST_*` event that is dispatched after the method is done working.
+
+The `Events::PRE_*` event allows listeners to change the values of the arguments
+that were passed to the method. It also allows listeners to abort altogether,
+preventing the method for performing any of its work. If an abort is triggered
+by calling the event object's `skip()` method, the remaining listeners will not
+be dispatched and the method will abort.
+
+For example, if a listener for `addFile()` calls the event object's `skip()`
+method, the `addFile()` method will not add the file. Alternatively, the
+listener can change the file that will be added, or the location of where
+it will be added in the archive. 
 
 ### `addEmptyDir()`
 
@@ -120,10 +142,9 @@ will be located at the path specified by `$local`.
 
     addFile($path, $local = null)
 
-This method will add the contents of a file on the file system, specified by
-`$path`, to the archive. By default, the full path to the file is stored in
-the archive. You may specify your own path in the archive by using the `$local`
-parameter.
+This method will add the contents of the file, `$path`, from the file system to
+the archive. By default, the full path to the file is stored in the archive. You
+may specify your own path in the archive by using the `$local` parameter.
 
 It is important to note that this particular method never calls the
 `Phar::addFile()` method. The contents of the file are read and the arguments,
@@ -141,8 +162,7 @@ allows for the file contents to be modified before it is added to the archive.
 
     addFromString($local, $contents = null);
 
-Adds a file to the archive using the given contents at the specified path in
-the archive.
+Adds the given `$contents` to the `$local` file in the archive.
 
 #### Event Dispatcher
 
@@ -155,9 +175,10 @@ the archive.
 
     buildFromDirectory($path, $filter = null)
 
-Recursively adds the files and directories from the specified directory. If a
-`$filter` is given, all path names that do not match the regular expression will
-not be added to the archive.
+Recursively adds the contents of a directory (`$path`) to the archive. If the
+regular expression `$filter` is provided, it will be used to whitelist the paths
+that are found in the directory. If a path does not match the regular expression
+it will not be added to the archive.
 
 It is important to note that this particular method never calls the 
 `Phar::buildFromDirectory()` method. An iterator that emulates the expected
@@ -204,12 +225,13 @@ There are a few of key/value combinations that are supported:
 
 This method will compress the files in the archive using the specified algorithm
 (e.g. `Builder::BZ2`, `Builder::GZ`). If the files in the archive could not be
-compressed, an exception is thrown with a little more information that what is
-normally provided by `Phar`.
+compressed, an exception will be thrown containing additional information about
+the failure.
 
-> There is a known bug with `Phar` that prevents archives with a large number
-> of files from being compressed. The exception that is thrown will attempt to
-> get the build working by giving you information on how to workaround this bug.
+> There is a known bug with the `phar` extension that prevents archives with a
+> large number of files from being compressed. The exception that is thrown will
+> attempt to get the build working by giving you additional information on how
+> to workaround this bug.
 
 ### `setEventDispatcher()`
 
@@ -324,7 +346,7 @@ Sets the code that must be executed inside the stub.
 
     setShebang($line) : Stub
 
-Sets the "shebang" line. If `$null`, the line will be removed.
+Sets the "shebang" line. If `null`, the line will be removed.
 
 ##### Default
 
@@ -355,4 +377,5 @@ This software is released under the MIT license.
 [EventDispatcher component]: http://symfony.com/doc/current/components/event_dispatcher/index.html
 [`Phar` class]: http://php.net/manual/en/class.phar.php
 [`phar` extension]: http://php.net/manual/en/book.phar.php
+[Event Dispatching]: https://github.com/box-project/builder/blob/master/Resources/images/dispatching.png
 [`Processor` component]: https://github.com/box-project/processor

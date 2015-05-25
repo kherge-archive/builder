@@ -411,15 +411,15 @@ use Box\Component\Builder\Event\Listener\RegexBlacklistSubscriber;
 
 $dispatcher->addSubscriber(
     new RegexBlacklistSubscriber(
-    
-        // directory blacklist
-        array(
-            '/\/[Tt]ests\//'
-        ),
         
         // file blacklist
         array(
             '/\.exe$/'
+        ),
+    
+        // directory blacklist
+        array(
+            '/\/[Tt]ests\//'
         )
     )
 );
@@ -437,15 +437,15 @@ use Box\Component\Builder\Event\Listener\RegexWhitelistSubscriber;
 
 $dispatcher->addSubscriber(
     new RegexWhitelistSubscriber(
-    
-        // directory blacklist
-        array(
-            '/\/src\//'
-        ),
         
         // file blacklist
         array(
             '/\.php/'
+        ),
+    
+        // directory blacklist
+        array(
+            '/\/src\//'
         )
     )
 );

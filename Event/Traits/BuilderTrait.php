@@ -16,7 +16,7 @@ trait BuilderTrait
      *
      * @var Builder
      */
-    private $builder;
+    protected $builder;
 
     /**
      * Returns the builder.

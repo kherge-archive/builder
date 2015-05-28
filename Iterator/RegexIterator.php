@@ -2,7 +2,6 @@
 
 namespace Box\Component\Builder\Iterator;
 
-use FilterIterator;
 use Iterator;
 
 /**
@@ -10,7 +9,7 @@ use Iterator;
  *
  * @author Kevin Herrera <kevin@herrera.io>
  */
-class RegexIterator extends FilterIterator
+class RegexIterator extends \FilterIterator
 {
     /**
      * The regular expression filter.

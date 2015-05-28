@@ -82,7 +82,9 @@ class LoggerIterator extends IteratorIterator implements LoggerAwareInterface
     {
         if ($resource instanceof SplFileInfo) {
             return $resource->getPathname();
-        } elseif ((false === strpos($resource, "\n")) && file_exists($resource)) {
+        } elseif (is_string($resource)
+            && (false === strpos($resource, "\n"))
+            && file_exists($resource)) {
             return $resource;
         }
 

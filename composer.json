@@ -43,7 +43,7 @@
     },
 
     "require-dev": {
-        "box-project/processor": "~0.1",
+        "box-project/processor": "~0.3",
         "monolog/monolog": "~1.6",
         "phpunit/phpunit": "~4.6",
         "symfony/event-dispatcher": "2.5.*"

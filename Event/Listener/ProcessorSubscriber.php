@@ -60,7 +60,7 @@ class ProcessorSubscriber implements EventSubscriberInterface
     {
         if ($this->processor->supports($event->getLocal())) {
             $event->setContents(
-                $this->processor->processContents(
+                $this->processor->process(
                     $event->getLocal(),
                     $event->getContents()
                 )
@@ -77,8 +77,8 @@ class ProcessorSubscriber implements EventSubscriberInterface
     {
         $event->setIterator(
             new ProcessorIterator(
-                $this->processor,
                 $event->getIterator(),
+                $this->processor,
                 $event->getBase()
             )
         );
